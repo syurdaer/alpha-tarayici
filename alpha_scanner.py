@@ -176,34 +176,33 @@ def main():
         finally:
             time.sleep(0.2)  # API'yi yormamak için kısa bekleme
 
-        if not a15 or not a1h:
-                print(
-                    f"{t['symbol']}: 15dk veya 1sa veri yetersiz"
-                )
-                continue
+       if not a15 or not a1h:
+            print(
+                f"{t['symbol']}: 15dk veya 1sa veri yetersiz"
+            )
+            continue
 
         total = a15["score"] + a1h["score"]
 
-            rr = (
-                levels4h.get("risk_reward")
-                if levels4h else None
-            )
-
-            print(
+        rr = (
+            levels4h.get("risk_reward")
+            if levels4h else None
+        )
+        print(
                 f"{t['symbol']} | "
                 f"15dk: {a15['score']}/4 | "
                 f"1sa: {a1h['score']}/4 | "
                 f"Toplam: {total}/8 | "
                 f"4sa R/R: {rr}"
             )
-            row = {
+        row = {
                 "symbol": t["symbol"],
                 "total": total,
                 "a15": a15,
                 "a1h": a1h,
                 "levels4h": levels4h,
             }         
-            if total >= MIN_TOTAL_SCORE:
+        if total >= MIN_TOTAL_SCORE:
                 rr = levels4h.get("risk_reward") if levels4h else None
 
                 if rr is not None and rr >= 1.5:
