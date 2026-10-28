@@ -169,7 +169,13 @@ def main():
         if not a15 or not a1h:
             continue
         total = a15["score"] + a1h["score"]
-        row = {"symbol": t["symbol"], "total": total, "a15": a15, "a1h": a1h}
+        row = {
+            "symbol": t["symbol"],
+            "total": total,
+            "a15": a15,
+            "a1h": a1h,
+            "levels4h": levels4h,
+        }
         if total >= MIN_TOTAL_SCORE:
             hits.append(row)
         if a15["bounce"]:
