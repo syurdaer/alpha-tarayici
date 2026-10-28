@@ -10,7 +10,7 @@ import time
 
 import pandas as pd
 import requests
-
+import technical_analysis
 # ---------- AYARLAR (GitHub Secrets / ortam değişkenleri ile değiştirilebilir) ----------
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
@@ -148,8 +148,18 @@ def main():
     hits, bounces = [], []
     for t in tokens:
         try:
-            a15 = analyze(get_klines(t["id"], "15m"))
-            a1h = analyze(get_klines(t["id"], "1h"))
+              try:
+                df4h = get_klines(t["id"], "4h")
+                levels4h = technical_analysis.technical_levels(df4h)
+                print(f"{t['symbol']} 4h teknik seviyeler: {levels4h}")
+              except Exception as e:
+                levels4h = None
+                print(f"{t['symbol']} 4h analiz atlandı: {e}")
+
+            
+              a15 = analyze(get_klines(t["id"], "15m"))
+              a1h = analyze(get_klines(t["id"], "1h"))
+
         except Exception as e:  # tek coin hatası tüm taramayı durdurmasın
             print(f"{t['symbol']} atlandı: {e}")
             continue
@@ -159,11 +169,23 @@ def main():
         if not a15 or not a1h:
             continue
         total = a15["score"] + a1h["score"]
-        row = {"symbol": t["symbol"], "total": total, "a15": a15, "a1h": a1h}
+        row = {
+            "symbol": t["symbol"],
+            "total": total,
+            "a15": a15,
+            "a1h": a1h,
+            "levels4h": levels4h,
+        }
+         
         if total >= MIN_TOTAL_SCORE:
-            hits.append(row)
+            rr = levels4h.get("risk_reward") if levels4h else None
+
+            if rr is not None and rr >= 1.5:
+                hits.append(row)
+
         if a15["bounce"]:
             bounces.append(row)
+
 
     if not hits and not bounces:
         print("Güçlü aday yok, mesaj gönderilmedi.")
@@ -179,6 +201,18 @@ def main():
                 f"  15dk: {', '.join(h['a15']['notes']) or '-'} (RSI {h['a15']['rsi']:.0f})\n"
                 f"  1sa: {', '.join(h['a1h']['notes']) or '-'} (RSI {h['a1h']['rsi']:.0f})"
             )
+            
+            if h.get("levels4h") and h["levels4h"].get("risk_reward") is not None:
+                lv = h["levels4h"]
+                lines.append(
+                    f"  4sa: {lv['signal']} | "
+                    f"Destek: {lv['support']:.6g} | "
+                    f"Direnç: {lv['resistance']:.6g}\n"
+                    f"  Stop: {lv['stop']:.6g} | "
+                    f"Hedef 1: {lv['target1']:.6g} | "
+                    f"Hedef 2: {lv['target2']:.6g} | "
+                    f"Risk/Ödül: {lv['risk_reward']:.2f}"
+                )
     if bounces:
         lines.append("\n↩️ TEPKİ ADAYLARI (aşırı satım + alt bant + hacim)")
         for b in bounces[:5]:
