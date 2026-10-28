@@ -195,6 +195,18 @@ def main():
                 f"  15dk: {', '.join(h['a15']['notes']) or '-'} (RSI {h['a15']['rsi']:.0f})\n"
                 f"  1sa: {', '.join(h['a1h']['notes']) or '-'} (RSI {h['a1h']['rsi']:.0f})"
             )
+            
+            if h.get("levels4h") and h["levels4h"].get("risk_reward") is not None:
+                lv = h["levels4h"]
+                lines.append(
+                    f"  4sa: {lv['signal']} | "
+                    f"Destek: {lv['support']:.6g} | "
+                    f"Direnç: {lv['resistance']:.6g}\n"
+                    f"  Stop: {lv['stop']:.6g} | "
+                    f"Hedef 1: {lv['target1']:.6g} | "
+                    f"Hedef 2: {lv['target2']:.6g} | "
+                    f"Risk/Ödül: {lv['risk_reward']:.2f}"
+                )
     if bounces:
         lines.append("\n↩️ TEPKİ ADAYLARI (aşırı satım + alt bant + hacim)")
         for b in bounces[:5]:
