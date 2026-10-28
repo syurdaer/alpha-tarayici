@@ -61,19 +61,20 @@ def get_klines(alpha_id, interval, limit=120):
     if not rows:
         return None
      
-df = pd.DataFrame(rows).iloc[:, :6]
-df.columns = ["time", "open", "high", "low", "close", "volume"]
+ 
+    df = pd.DataFrame(rows).iloc[:, :6]
+    df.columns = ["time", "open", "high", "low", "close", "volume"]
 
-df["time"] = pd.to_numeric(df["time"], errors="coerce")
+    df["time"] = pd.to_numeric(df["time"], errors="coerce")
 
-for col in ["open", "high", "low", "close", "volume"]:
-    df[col] = pd.to_numeric(df[col], errors="coerce")
+    for col in ["open", "high", "low", "close", "volume"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
-df = df.dropna().sort_values("time").drop_duplicates(
-    subset=["time"], keep="last"
-)
+    df = df.dropna().sort_values("time").drop_duplicates(
+        subset=["time"], keep="last"
+    )
 
-return df.reset_index(drop=True)
+    return df.reset_index(drop=True)
 
 
 # ---------- GÖSTERGELER ----------
