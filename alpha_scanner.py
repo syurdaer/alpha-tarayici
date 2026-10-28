@@ -176,7 +176,7 @@ def main():
         finally:
             time.sleep(0.2)  # API'yi yormamak için kısa bekleme
 
-                     if not a15 or not a1h:
+        if not a15 or not a1h:
                 print(
                     f"{t['symbol']}: 15dk veya 1sa veri yetersiz"
                 )
