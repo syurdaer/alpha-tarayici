@@ -176,25 +176,41 @@ def main():
         finally:
             time.sleep(0.2)  # API'yi yormamak için kısa bekleme
 
-        if not a15 or not a1h:
-            continue
-        total = a15["score"] + a1h["score"]
-        row = {
-            "symbol": t["symbol"],
-            "total": total,
-            "a15": a15,
-            "a1h": a1h,
-            "levels4h": levels4h,
-        }
-         
-        if total >= MIN_TOTAL_SCORE:
-            rr = levels4h.get("risk_reward") if levels4h else None
+                     if not a15 or not a1h:
+                print(
+                    f"{t['symbol']}: 15dk veya 1sa veri yetersiz"
+                )
+                continue
 
-            if rr is not None and rr >= 1.5:
-                hits.append(row)
+            total = a15["score"] + a1h["score"]
 
-        if a15["bounce"]:
-            bounces.append(row)
+            rr = (
+                levels4h.get("risk_reward")
+                if levels4h else None
+            )
+
+            print(
+                f"{t['symbol']} | "
+                f"15dk: {a15['score']}/4 | "
+                f"1sa: {a1h['score']}/4 | "
+                f"Toplam: {total}/8 | "
+                f"4sa R/R: {rr}"
+            )
+            row = {
+                "symbol": t["symbol"],
+                "total": total,
+                "a15": a15,
+                "a1h": a1h,
+                "levels4h": levels4h,
+            }         
+            if total >= MIN_TOTAL_SCORE:
+                rr = levels4h.get("risk_reward") if levels4h else None
+
+                if rr is not None and rr >= 1.5:
+                    hits.append(row)
+
+            if a15["bounce"]:
+                bounces.append(row)
 
 
     if not hits and not bounces:
