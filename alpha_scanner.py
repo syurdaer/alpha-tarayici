@@ -148,6 +148,14 @@ def main():
     hits, bounces = [], []
     for t in tokens:
         try:
+              try:
+                df4h = get_klines(t["id"], "4h")
+                levels4h = technical_analysis.technical_levels(df4h)
+                print(f"{t['symbol']} 4h teknik seviyeler: {levels4h}")
+              except Exception as e:
+                levels4h = None
+                print(f"{t['symbol']} 4h analiz atlandı: {e}")
+
             a15 = analyze(get_klines(t["id"], "15m"))
             a1h = analyze(get_klines(t["id"], "1h"))
         except Exception as e:  # tek coin hatası tüm taramayı durdurmasın
