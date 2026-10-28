@@ -182,7 +182,7 @@ def main():
                 )
                 continue
 
-            total = a15["score"] + a1h["score"]
+        total = a15["score"] + a1h["score"]
 
             rr = (
                 levels4h.get("risk_reward")
