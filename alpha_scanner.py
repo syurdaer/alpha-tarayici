@@ -176,10 +176,16 @@ def main():
             "a1h": a1h,
             "levels4h": levels4h,
         }
+         
         if total >= MIN_TOTAL_SCORE:
-            hits.append(row)
+            rr = levels4h.get("risk_reward") if levels4h else None
+
+            if rr is not None and rr >= 1.5:
+                hits.append(row)
+
         if a15["bounce"]:
             bounces.append(row)
+
 
     if not hits and not bounces:
         print("Güçlü aday yok, mesaj gönderilmedi.")
