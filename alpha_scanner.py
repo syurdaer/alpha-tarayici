@@ -10,7 +10,7 @@ import time
 
 import pandas as pd
 import requests
-
+import technical_analysis
 # ---------- AYARLAR (GitHub Secrets / ortam değişkenleri ile değiştirilebilir) ----------
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
