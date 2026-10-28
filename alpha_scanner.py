@@ -60,11 +60,20 @@ def get_klines(alpha_id, interval, limit=120):
     rows = r.json().get("data") or []
     if not rows:
         return None
-    df = pd.DataFrame(rows).iloc[:, :6]
-    df.columns = ["time", "open", "high", "low", "close", "volume"]
-    for col in ["open", "high", "low", "close", "volume"]:
-        df[col] = pd.to_numeric(df[col], errors="coerce")
-    return df.dropna().reset_index(drop=True)
+     
+df = pd.DataFrame(rows).iloc[:, :6]
+df.columns = ["time", "open", "high", "low", "close", "volume"]
+
+df["time"] = pd.to_numeric(df["time"], errors="coerce")
+
+for col in ["open", "high", "low", "close", "volume"]:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+df = df.dropna().sort_values("time").drop_duplicates(
+    subset=["time"], keep="last"
+)
+
+return df.reset_index(drop=True)
 
 
 # ---------- GÖSTERGELER ----------
