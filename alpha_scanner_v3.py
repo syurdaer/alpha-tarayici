@@ -71,7 +71,8 @@ def get_tokens():
 def get_klines(alpha_id, interval, limit=120):
     if interval not in INTERVAL_MS:
         raise ValueError(f'Geçersiz zaman aralığı: {interval}')
-    rows = api_data(KLINE_URL, {'symbol': f'{alpha_id}USDT', 'interval': interval, 'limit': limit})
+    api_symbol = f'{alpha_id}USDT'
+    rows = api_data(KLINE_URL, {'symbol': api_symbol, 'interval': interval, 'limit': limit})
     if not isinstance(rows, list) or not rows:
         return None
     if any(not isinstance(row, (list, tuple)) or len(row) < 6 for row in rows):
@@ -249,7 +250,7 @@ def main():
 
             candidates.append((total, token, a15, a1h, levels, key, kind))
         except Exception as exc:
-            print(f"{token['symbol']} atlandı: {exc}")
+            print(f"{token['symbol']} (Alpha ID: {token['id']}, API sembolü: {token['id']}USDT) atlandı: {exc}")
         finally:
             time.sleep(0.2)
     if not candidates:
