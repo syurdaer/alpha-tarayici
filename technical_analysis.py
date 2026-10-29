@@ -1,4 +1,4 @@
- """
+"""
 Binance Alpha & Spot technical levels (V3).
 Pass candles_are_closed=True when input contains only completed candles.
 """
