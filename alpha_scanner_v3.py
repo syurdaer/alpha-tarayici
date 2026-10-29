@@ -238,8 +238,15 @@ def main():
             # Use the same closed 15m candle timestamp to avoid duplicate alerts.
             kind = 'GÜÇLÜ ADAY'
             key = f"{token['id']}:{kind}"
-            if state.get(key) == a15['time']:
+
+            previous = state.get(key)
+            if isinstance(previous, dict):
+                previous_time = previous.get('time')
+                if previous_time == a15['time']:
+                    continue
+            elif previous == a15['time']:
                 continue
+
             candidates.append((total, token, a15, a1h, levels, key, kind))
         except Exception as exc:
             print(f"{token['symbol']} atlandı: {exc}")
