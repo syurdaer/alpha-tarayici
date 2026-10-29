@@ -233,7 +233,7 @@ def main():
             levels['entry_reference'] = entry_now
             bounce = a15['bounce']
             print(f"{token['symbol']}: 15m={a15['score']} 1h={a1h['score']} toplam={total} RR={levels['risk_reward']:.2f}")
-            if total < MIN_TOTAL_SCORE and not bounce:
+            if total < MIN_TOTAL_SCORE:
                 continue
             # Use the same closed 15m candle timestamp to avoid duplicate alerts.
             kind = 'TEPKİ ADAYI' if bounce and total < MIN_TOTAL_SCORE else 'GÜÇLÜ ADAY'
