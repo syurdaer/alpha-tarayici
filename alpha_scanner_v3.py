@@ -213,6 +213,22 @@ def main():
                 print(f"{token['symbol']}: eksik veri veya geçersiz risk/ödül")
                 continue
             total = a15['score'] + a1h['score']
+            entry_now = float(a15['price'])
+            stop = float(levels['stop'])
+            target = float(levels['target1'])
+
+            if not (0 < stop < entry_now < target):
+                print(f"{token['symbol']}: güncel fiyat seviyeleri geçersiz")
+                continue
+
+            rr_now = (target - entry_now) / (entry_now - stop)
+
+            if rr_now < MIN_RR:
+                print(f"{token['symbol']}: güncel R/R yetersiz ({rr_now:.2f})")
+                continue
+
+            levels['risk_reward'] = rr_now
+            levels['entry_reference'] = entry_now
             bounce = a15['bounce']
             print(f"{token['symbol']}: 15m={a15['score']} 1h={a1h['score']} toplam={total} RR={levels['risk_reward']:.2f}")
             if total < MIN_TOTAL_SCORE and not bounce:
