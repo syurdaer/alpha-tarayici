@@ -44,7 +44,7 @@ jobs:
       - name: Run Spot Scanner V2
         run: python spot_scanner.py
         env:
-          DRY_RUN: "1"
+          DRY_RUN: "0"
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SPOT_MIN_VOLUME: "5000000"
