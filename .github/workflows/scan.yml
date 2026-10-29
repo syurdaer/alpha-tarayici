@@ -46,7 +46,13 @@ jobs:
               --name alpha-alert-state \
               --dir . || echo "No previous state artifact"
           fi
-
+      - name: Verify restored alert state
+        run: |
+          if [ -f alpha_alert_state.json ]; then
+            echo "STATE_RESTORE_OK"
+          else
+            echo "STATE_RESTORE_MISSING"
+          fi
       - name: Run Alpha Scanner V3
         run: python alpha_scanner_v3.py
         env:
