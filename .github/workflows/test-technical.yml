@@ -29,6 +29,7 @@ jobs:
 
       - name: Check Python syntax
         run: |
+          python -m py_compile alpha_scanner.py
           python -m py_compile alpha_scanner_v3.py
           python -m py_compile technical_analysis.py
 
