@@ -1,4 +1,4 @@
- """Binance Spot scanner: confirmed candles, risk filters and deduplicated alerts."""
+"""Binance Spot scanner: confirmed candles, risk filters and deduplicated alerts."""
 import json
 import math
 import os
