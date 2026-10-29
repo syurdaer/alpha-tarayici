@@ -1,20 +1,61 @@
+ 
 name: Spot Scanner
 
 on:
   schedule:
-    - cron: "*/30 * * * *"   # 30 dakikada bir
-  workflow_dispatch:          # elle çalıştırma butonu
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: spot-scanner-state
+  cancel-in-progress: false
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install requests pandas
-      - run: python spot_scanner.py
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Check Python syntax
+        run: python -m py_compile spot_scanner.py
+
+      - name: Restore Spot alert state
+        uses: actions/cache/restore@v4
+        with:
+          path: spot_alert_state.json
+          key: spot-state-${{ github.run_id }}
+          restore-keys: |
+            spot-state-
+
+      - name: Run Spot Scanner V2
+        run: python spot_scanner.py
         env:
+          DRY_RUN: "1"
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SPOT_MIN_VOLUME: "5000000"
+          SPOT_MAX_COINS: "100"
+          SPOT_MIN_SCORE: "6"
+          SPOT_MIN_RR: "1.5"
+          SPOT_ALERT_STATE_FILE: spot_alert_state.json
+
+      - name: Save Spot alert state
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: spot_alert_state.json
+          key: spot-state-${{ github.run_id }}
