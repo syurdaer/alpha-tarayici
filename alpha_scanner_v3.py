@@ -201,6 +201,8 @@ def main():
     tokens = get_tokens()
     print(f'{len(tokens)} Alpha token taranacak')
     state = load_state()
+    if not STATE_FILE.exists():
+        save_state(state)
     candidates = []
     for token in tokens:
         try:
