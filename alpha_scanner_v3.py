@@ -236,7 +236,7 @@ def main():
             if total < MIN_TOTAL_SCORE:
                 continue
             # Use the same closed 15m candle timestamp to avoid duplicate alerts.
-            kind = 'TEPKİ ADAYI' if bounce and total < MIN_TOTAL_SCORE else 'GÜÇLÜ ADAY'
+            kind = 'GÜÇLÜ ADAY'
             key = f"{token['id']}:{kind}"
             if state.get(key) == a15['time']:
                 continue
