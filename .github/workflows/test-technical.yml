@@ -1,10 +1,11 @@
-
+ 
 name: Technical Analysis Tests
 
 on:
   push:
     branches:
       - technical-analysis-v2
+      - alpha-clean-v3
   workflow_dispatch:
 
 permissions:
@@ -25,6 +26,11 @@ jobs:
 
       - name: Install dependencies
         run: python -m pip install pandas
+
+      - name: Check Python syntax
+        run: |
+          python -m py_compile alpha_scanner_v3.py
+          python -m py_compile technical_analysis.py
 
       - name: Run technical analysis tests
         run: python -m unittest -v test_technical_analysis.py
