@@ -139,15 +139,21 @@ def analyze(df):
     if vol_ratio >= 2:
         score += 1
         notes.append("Hacim")
-     bounce = (
-         30 <= rsi <= 45
-         and pct_b <= 0.20
-         and vol_ratio >= 1.5
-         and price > float(df["open"].iloc[-1])
-     )
-return {"score": score, "bounce": bounce, "rsi": rsi, "price": price,
-            "vol_ratio": vol_ratio, "notes": notes}
-
+      
+    bounce = (
+        30 <= rsi <= 45
+        and pct_b <= 0.20
+        and vol_ratio >= 1.5
+        and price > float(df["open"].iloc[-1])
+    )
+    return {
+        "score": score,
+        "bounce": bounce,
+        "rsi": rsi,
+        "price": price,
+        "vol_ratio": vol_ratio,
+        "notes": notes
+    }
 
 def levels_for(df):
     result = technical_analysis.technical_levels(df, candles_are_closed=True)
