@@ -63,6 +63,12 @@ def get_tokens():
         # Missing liquidity is not equivalent to adequate liquidity.
         if volume is None or liquidity is None or volume < MIN_VOLUME_24H or liquidity < MIN_LIQUIDITY:
             continue
+        print(
+            f"TOKEN KONTROL | "
+            f"alphaId={alpha_id} | "
+            f"symbol={token.get('symbol')} | "
+            f"tokenId={token.get('tokenId')}"
+        )    
         tokens.append({'id': str(alpha_id), 'symbol': str(token.get('symbol') or alpha_id), 'vol': volume})
     tokens.sort(key=lambda item: item['vol'], reverse=True)
     return tokens[:MAX_COINS]
