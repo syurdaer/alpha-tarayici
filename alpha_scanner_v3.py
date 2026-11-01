@@ -77,10 +77,25 @@ def get_tokens():
 def get_klines(alpha_id, interval, limit=120):
     if interval not in INTERVAL_MS:
         raise ValueError(f'Geçersiz zaman aralığı: {interval}')
-    api_symbol = f'{alpha_id}USDT'
-    rows = api_data(KLINE_URL, {'symbol': api_symbol, 'interval': interval, 'limit': limit})
-    if not isinstance(rows, list) or not rows:
-        return None
+     
+rows = None
+for quote in ('USDT', 'USDC'):
+    api_symbol = f'{alpha_id}{quote}'
+    try:
+        rows = api_data(
+            KLINE_URL,
+            {'symbol': api_symbol, 'interval': interval, 'limit': limit}
+        )
+        if isinstance(rows, list) and rows:
+            print(f"PARITE BULUNDU | {api_symbol} | {interval}")
+            break
+    except ValueError as exc:
+        if '-1121' not in str(exc):
+            raise
+
+if not isinstance(rows, list) or not rows:
+    print(f"PARITE BULUNAMADI | {alpha_id} | {interval}")
+    return None
     if any(not isinstance(row, (list, tuple)) or len(row) < 6 for row in rows):
         return None
     df = pd.DataFrame([row[:6] for row in rows], columns=['time', 'open', 'high', 'low', 'close', 'volume'])
