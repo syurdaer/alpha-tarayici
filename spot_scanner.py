@@ -139,8 +139,13 @@ def analyze(df):
     if vol_ratio >= 2:
         score += 1
         notes.append("Hacim")
-    bounce = rsi < 30 and pct_b <= 0.05 and vol_ratio >= 2
-    return {"score": score, "bounce": bounce, "rsi": rsi, "price": price,
+     bounce = (
+         30 <= rsi <= 45
+         and pct_b <= 0.20
+         and vol_ratio >= 1.5
+         and price > float(df["open"].iloc[-1])
+     )
+return {"score": score, "bounce": bounce, "rsi": rsi, "price": price,
             "vol_ratio": vol_ratio, "notes": notes}
 
 
@@ -211,13 +216,19 @@ def main():
             if not a1 or not a4:
                 continue
             total = a1["score"] + a4["score"]
-            if total < MIN_SCORE and not a1["bounce"]:
-                continue
+            print(f"SPOT KONTROL | {symbol} | 1h={a1['score']} | 4h={a4['score']} | toplam={total} | bounce={a1['bounce']}")
             levels = levels_for(four_hour)
             if not levels:
                 continue
-            # 1h and 4h must both confirm; do not alert on bounce alone.
-            if total < MIN_SCORE:
+            # 4 saatlik teyit olmadan destekten donus bildirimi verme
+            four_hour_confirm = (
+                a4["score"] >= 2
+                and 35 <= a4["rsi"] <= 70
+            )
+
+            confirmed_bounce = a1["bounce"] and four_hour_confirm
+
+            if total < MIN_SCORE and not confirmed_bounce:
                 continue
             candle_time = int(four_hour["time"].iloc[-1])
             signal_key = f"{symbol}:4h:{candle_time}"
