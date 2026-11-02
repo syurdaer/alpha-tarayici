@@ -157,7 +157,19 @@ def analyze(df):
 
 def levels_for(df):
     result = technical_analysis.technical_levels(df, candles_are_closed=True)
+     
     if not isinstance(result, dict):
+        print("SPOT SEVIYE: Teknik analiz sonucu yok")
+        return None
+
+    if result.get("entry") is None or result.get("stop") is None or result.get("target1") is None:
+        print(
+            f"SPOT SEVIYE: Sinyal={result.get('signal')} | "
+            f"Fiyat={result.get('price')} | "
+            f"Destek={result.get('support')} | "
+            f"Direnc={result.get('resistance')} | "
+            "Giris/stop/hedef olusmadi"
+        )
         return None
     try:
         support = float(result["support"])
@@ -170,7 +182,17 @@ def levels_for(df):
         return None
     if not all(map(math.isfinite, (support, resistance, stop, target, price, rr))):
         return None
+     
     if not (0 < stop < price < target <= resistance and support < resistance and rr >= MIN_RR):
+        print(
+            f"SPOT RISK ELEME | "
+            f"Fiyat={price:.8g} | "
+            f"Destek={support:.8g} | "
+            f"Direnc={resistance:.8g} | "
+            f"Stop={stop:.8g} | "
+            f"Hedef={target:.8g} | "
+            f"RR={rr:.2f} | Minimum={MIN_RR}"
+        )
         return None
     return {"support": support, "resistance": resistance, "entry": price,
             "stop": stop, "target": target, "rr": rr}
