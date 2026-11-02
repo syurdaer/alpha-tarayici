@@ -1,4 +1,4 @@
- """Binance Alpha & Spot technical levels (V4).
+"""Binance Alpha & Spot technical levels (V4).
 
 Uses completed OHLC candles. Levels are indicative, not trade instructions.
 The caller must independently confirm volume, trend and signal freshness.
