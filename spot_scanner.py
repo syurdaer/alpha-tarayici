@@ -230,6 +230,7 @@ def send_telegram(message):
 
 
 def main():
+    counts = {"missing_data": 0, "invalid_analysis": 0, "score_rejected": 0, "level_rejected": 0, "duplicate": 0, "eligible": 0, "errors": 0}
     state = load_state()
     symbols = get_symbols()
     print(f"{len(symbols)} Spot USDT paritesi incelenecek")
@@ -239,29 +240,34 @@ def main():
             one_hour = get_klines(symbol, "1h")
             four_hour = get_klines(symbol, "4h")
             if one_hour is None or four_hour is None:
+                counts["missing_data"] += 1
                 continue
             a1, a4 = analyze(one_hour), analyze(four_hour)
             if not a1 or not a4:
+                counts["invalid_analysis"] += 1
                 continue
             total = a1["score"] + a4["score"]
             print(f"SPOT KONTROL | {symbol} | 1h={a1['score']} | 4h={a4['score']} | toplam={total} | bounce={a1['bounce']}")
-            levels = levels_for(four_hour)
-            if not levels:
-                print(f"SPOT ELENDI | {symbol} | Sebep: Teknik seviyeler veya risk/odul filtresi")
-                continue          
-                 # 4 saatlik teyit olmadan destekten donus bildirimi verme
+            # Önce teknik teyit; ardından maliyetli seviye/risk hesabı.
             four_hour_confirm = (
                 a4["score"] >= 2
                 and 35 <= a4["rsi"] <= 70
             )
-
             confirmed_bounce = a1["bounce"] and four_hour_confirm
-
             if total < MIN_SCORE and not confirmed_bounce:
+                counts["score_rejected"] += 1
+                print(f"SPOT PUAN ELEME | {symbol} | toplam={total} | esik={MIN_SCORE} | bounce_teyit={confirmed_bounce}")
                 continue
+            levels = levels_for(four_hour)
+            if not levels:
+                counts["level_rejected"] += 1
+                print(f"SPOT SEVIYE/RR ELEME | {symbol}")
+                continue
+            counts["eligible"] += 1
             candle_time = int(four_hour["time"].iloc[-1])
             signal_key = f"{symbol}:4h:{candle_time}"
             if signal_key in state:
+                counts["duplicate"] += 1
                 continue
             timestamp = datetime.fromtimestamp(candle_time / 1000, tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
             message = (
@@ -279,8 +285,10 @@ def main():
                 save_state(state)
                 sent += 1
         except (requests.RequestException, ValueError, KeyError, TypeError, RuntimeError) as exc:
+            counts["errors"] += 1
             print(f"{symbol}: atlandı ({exc})")
         time.sleep(0.08)
+    print(f"SPOT OZET | incelenen={len(symbols)} | " + " | ".join(f"{k}={v}" for k, v in counts.items()))
     print(f"Tarama tamamlandı. Yeni gönderilen sinyal: {sent}")
 
 
