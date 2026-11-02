@@ -223,10 +223,10 @@ def main():
                 continue
             total = a1["score"] + a4["score"]
             print(f"SPOT KONTROL | {symbol} | 1h={a1['score']} | 4h={a4['score']} | toplam={total} | bounce={a1['bounce']}")
-             levels = levels_for(four_hour)
-             if not levels:
-                 print(f"SPOT ELENDI | {symbol} | Sebep: Teknik seviyeler veya risk/odul filtresi")
-                 continue          
+            levels = levels_for(four_hour)
+            if not levels:
+                print(f"SPOT ELENDI | {symbol} | Sebep: Teknik seviyeler veya risk/odul filtresi")
+                continue          
                  # 4 saatlik teyit olmadan destekten donus bildirimi verme
             four_hour_confirm = (
                 a4["score"] >= 2
